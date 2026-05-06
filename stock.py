@@ -36,13 +36,13 @@ if __name__ == "__main__":
 
         token = os.getenv("TOKEN")
         chat_id = os.getenv("CHAT_ID")
-        print("TOKEN exists:", token is not None)
-        print("CHAT_ID exists:", chat_id is not None)
+        print("TOKEN =", token)
+        print("CHAT_ID =", chat_id)
 
         if token and chat_id:
             response = send_telegram_message(token, chat_id, message)
-            print("Telegram status:", response.status_code)
-            print("Telegram response:", response.text)
+            print("STATUS:", response.status_code)
+            print("RESPONSE:", response.text)
             response.raise_for_status()
             print("已傳送 Telegram 訊息。")
         else:
