@@ -18,13 +18,13 @@ def fetch_stock_price(stock_code: str) -> str:
         raise ValueError("抓不到股價，請確認股票代碼是否正確")
 
 
-def send_telegram_message(token: str, chat_id: str, text: str) -> None:
+def send_telegram_message(token: str, chat_id: str, text: str) -> requests.Response:
     url = f"https://api.telegram.org/bot{token}/sendMessage"
     response = requests.post(url, data={
         "chat_id": chat_id,
         "text": text,
     }, timeout=10)
-    response.raise_for_status()
+    return response
 
 
 if __name__ == "__main__":
@@ -40,7 +40,10 @@ if __name__ == "__main__":
         print("CHAT_ID exists:", chat_id is not None)
 
         if token and chat_id:
-            send_telegram_message(token, chat_id, message)
+            response = send_telegram_message(token, chat_id, message)
+            print("Telegram status:", response.status_code)
+            print("Telegram response:", response.text)
+            response.raise_for_status()
             print("已傳送 Telegram 訊息。")
         else:
             print("TOKEN 或 CHAT_ID 尚未設定，僅列印股價。")
