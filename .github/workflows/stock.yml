@@ -13,4 +13,7 @@ jobs:
       - name: Install
         run: pip install requests beautifulsoup4
       - name: Run script
+        env:
+          TOKEN: ${{ secrets.TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
         run: python stock.py
