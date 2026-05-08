@@ -28,28 +28,36 @@ def send_telegram_message(token: str, chat_id: str, text: str) -> requests.Respo
 
 
 if __name__ == "__main__":
-    stock_code = "2330"
-    try:
-        price = fetch_stock_price(stock_code)
-        message = f"目前股價：{price}"
-        print(message)
+    stock_codes = ["2330", "0050"]
+    token = os.getenv("TOKEN")
+    chat_id = os.getenv("CHAT_ID")
+    
+    print("TOKEN =", token)
+    print("CHAT_ID =", chat_id)
+    
+    messages = []
+    
+    for stock_code in stock_codes:
+        try:
+            price = fetch_stock_price(stock_code)
+            message = f"{stock_code}目前股價：{price}"
+            print(message)
+            messages.append(message)
+        except requests.RequestException as exc:
+            print(f"{stock_code} 網路請求失敗：{exc}")
+        except ValueError as exc:
+            print(f"{stock_code} 資料解析失敗：{exc}")
+        except Exception as exc:
+            print(f"{stock_code} 發生未知錯誤：{exc}")
 
-        token = os.getenv("TOKEN")
-        chat_id = os.getenv("CHAT_ID")
-        print("TOKEN =", token)
-        print("CHAT_ID =", chat_id)
-
+    if messages:
+        full_message = "\n".join(messages)
+        
         if token and chat_id:
-            response = send_telegram_message(token, chat_id, message)
+            response = send_telegram_message(token, chat_id, full_message)
             print("STATUS:", response.status_code)
             print("RESPONSE:", response.text)
             response.raise_for_status()
             print("已傳送 Telegram 訊息。")
         else:
             print("TOKEN 或 CHAT_ID 尚未設定，僅列印股價。")
-    except requests.RequestException as exc:
-        print(f"網路請求失敗：{exc}")
-    except ValueError as exc:
-        print(f"資料解析失敗：{exc}")
-    except Exception as exc:
-        print(f"發生未知錯誤：{exc}")
